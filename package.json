@@ -1,0 +1,24 @@
+{
+  "name": "express-wake",
+  "version": "0.0.1",
+  "description": "Kinda traces requests somehow.",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0"
+  },
+  "repository": "mvaldesdeleon/express-wake",
+  "keywords": [
+    "beeson",
+    "express-rpc",
+    "express",
+    "middleware",
+    "rpc"
+  ],
+  "author": "Martin Valdes de Leon <m.valdesdeleon@gmail.com>",
+  "license": "MIT"
+}
