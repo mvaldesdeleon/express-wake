@@ -22,14 +22,14 @@ module.exports = function(tracer) {
 
     return {
         middleware: function(req, res, next) {
+            let _reqId = req.get('x-wake-request-id') || ++reqId;
+            currentReqId = _reqId;
+
             const wrapRes = propFn => (...args) => {
                 tracer(Object.assign({}, configRes(res), { requestId: _reqId, type: 'response', result: 'success' }));
+                res.set('x-wake-request-id', _reqId);
                 return res[propFn](...args);
             };
-
-            // TODO: fetch requestId from headers if possible
-            let _reqId = ++reqId;
-            currentReqId = _reqId;
 
             req.currentReqId = _reqId;
             res.currentReqId = _reqId;
@@ -41,7 +41,8 @@ module.exports = function(tracer) {
             return next();
         },
         error: function(err, req, res, next) {
-            tracer(Object.assign({}, configRes(res), { requestId: req.currentReqId, type: 'response', result: 'error', error: err }));
+            res.set('x-wake-request-id', res.currentReqId);
+            tracer(Object.assign({}, configRes(res), { requestId: res.currentReqId, type: 'response', result: 'error', error: err }));
             return next();
         },
         decorator: function(tag, config, fn) {
