@@ -59,7 +59,7 @@ module.exports = function(tracer) {
                         return result;
                     })
                     .catch(err => {
-                        tracer(Object.assign({}, config(...args), {tag, requestId: _reqId, operationId: _opId, type: 'response', result: 'error', error: err}));
+                        tracer(Object.assign({}, config(...args), { tag, requestId: _reqId, operationId: _opId, type: 'response', result: 'error', error: err }));
                         currentReqId = _reqId;
                         return Promise.reject(err);
                     });
