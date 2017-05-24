@@ -1,6 +1,20 @@
 module.exports = function(tracer) {
-    const configReq = req => ({}); // TODO: extract some data from the request for the tracer
-    const configRes = res => ({}); // TODO: extract some data from the response for the tracer
+    const validHeader = header => {
+        header = header.toLowerCase();
+
+        return header === 'host' || header === 'user-agent' || header.startsWith('x-');
+    };
+    const whitelistHeaders = headers => Object.keys(headers).reduce((newHeaders, header) => !validHeader(header) ? newHeaders : Object.assign(newHeaders, {[header]: headers[header]}), {});
+    const configReq = req => ({
+        method: req.method,
+        url: req.originalUrl,
+        headers: whitelistHeaders(req.headers)
+    });
+    const configRes = res => ({
+        statusCode: res.statusCode,
+        statusMessage: res.statusMessage,
+        headers: whitelistHeaders(res.headers)
+    });
 
     let reqId = 0;
     let opId = 0;
