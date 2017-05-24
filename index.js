@@ -25,10 +25,14 @@ module.exports = function(tracer) {
             let _reqId = req.get('x-wake-request-id') || ++reqId;
             currentReqId = _reqId;
 
-            const wrapRes = propFn => (...args) => {
-                tracer(Object.assign({}, configRes(res), { requestId: _reqId, type: 'response', result: 'success' }));
-                res.set('x-wake-request-id', _reqId);
-                return res[propFn](...args);
+            const wrapRes = propFn => {
+                const _fn = res[propFn].bind(res);
+
+                return (...args) => {
+                    tracer(Object.assign({}, configRes(res), { requestId: _reqId, type: 'response', result: 'success' }));
+                    res.set('x-wake-request-id', _reqId);
+                    return _fn(...args);
+                };
             };
 
             req.currentReqId = _reqId;
