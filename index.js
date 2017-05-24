@@ -4,7 +4,7 @@ module.exports = function(tracer) {
 
         return header === 'host' || header === 'user-agent' || header.startsWith('x-');
     };
-    const whitelistHeaders = headers => Object.keys(headers).reduce((newHeaders, header) => !validHeader(header) ? newHeaders : Object.assign(newHeaders, {[header]: headers[header]}), {});
+    const whitelistHeaders = (headers = {}) => Object.keys(headers).reduce((newHeaders, header) => !validHeader(header) ? newHeaders : Object.assign(newHeaders, {[header]: headers[header]}), {});
     const configReq = req => ({
         method: req.method,
         url: req.originalUrl,
