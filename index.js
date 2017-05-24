@@ -16,6 +16,7 @@ module.exports = function(tracer) {
         headers: whitelistHeaders(res.headers)
     });
 
+    // TODO: We would need globally-unique ids for both requests and operations
     let reqId = 0;
     let opId = 0;
     let currentReqId = reqId;
@@ -37,6 +38,7 @@ module.exports = function(tracer) {
 
             req.currentReqId = _reqId;
             res.currentReqId = _reqId;
+            res.end = wrapRes('end');
             res.send = wrapRes('send');
             res.sendFile = wrapRes('sendFile');
             res.sendStatus = wrapRes('sendStatus');
