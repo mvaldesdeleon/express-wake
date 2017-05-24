@@ -45,8 +45,8 @@ module.exports = function(tracer) {
             return next();
         },
         error: function(err, req, res, next) {
-            res.set('x-wake-request-id', res.currentReqId);
             tracer(Object.assign({}, configRes(res), { requestId: res.currentReqId, type: 'response', result: 'error', error: err }));
+            res.set('x-wake-request-id', res.currentReqId);
             return next();
         },
         decorator: function(tag, config, fn) {
