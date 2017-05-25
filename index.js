@@ -22,7 +22,7 @@ module.exports = function(tracer, options = {}) {
                 const _fn = res[propFn].bind(res);
 
                 return (...args) => {
-                    tracer(Object.assign({}, configRes(res), { requestId: _reqId, interface: 'external', type: 'response', result: 'success' }));
+                    tracer(Object.assign(configRes(res), { requestId: _reqId, interface: 'external', type: 'response', result: 'success' }));
                     res.set('x-wake-request-id', _reqId);
                     return _fn(...args);
                 };
@@ -32,11 +32,11 @@ module.exports = function(tracer, options = {}) {
             res.currentReqId = _reqId;
             res.end = wrapRes('end');
 
-            tracer(Object.assign({}, configReq(req), { requestId: _reqId, interface: 'external', type: 'request' }));
+            tracer(Object.assign(configReq(req), { requestId: _reqId, interface: 'external', type: 'request' }));
             return next();
         },
         error: function(err, req, res, next) {
-            tracer(Object.assign({}, configRes(res), { requestId: res.currentReqId, interface: 'external', type: 'response', result: 'error' }, options.debug ? { error: toObject(err) } : {}));
+            tracer(Object.assign(configRes(res), { requestId: res.currentReqId, interface: 'external', type: 'response', result: 'error' }, options.debug ? { error: toObject(err) } : {}));
             res.set('x-wake-request-id', res.currentReqId);
             return next();
         },
@@ -45,20 +45,25 @@ module.exports = function(tracer, options = {}) {
                 let _reqId = currentReqId;
                 let _opId = uuid();
 
-                tracer(Object.assign({}, config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'request' }));
+                tracer(Object.assign(config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'request' }));
                 // FUN FACT: Request data is provided to the decorated function as the `this` argument!
                 return fn.call({ requestId: _reqId, operationId: _opId }, ...args)
                     .then(result => {
-                        tracer(Object.assign({}, config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'success' }));
+                        tracer(Object.assign(config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'success' }));
                         currentReqId = _reqId;
                         return result;
                     })
                     .catch(err => {
-                        tracer(Object.assign({}, config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'error' }, options.debug ? { error: toObject(err) } : {}));
+                        tracer(Object.assign(config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'error' }, options.debug ? { error: toObject(err) } : {}));
                         currentReqId = _reqId;
                         return Promise.reject(err);
                     });
             };
+        },
+        log: function(traceData) {
+            let _reqId = currentReqId;
+
+            tracer(Object.assign({}, traceData, { requestId: _reqId, type: 'log' }));
         }
     };
 };
