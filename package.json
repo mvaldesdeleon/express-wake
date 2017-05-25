@@ -1,12 +1,13 @@
 {
   "name": "express-wake",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Kinda traces requests somehow.",
   "main": "index.js",
   "scripts": {
     "lint": "eslint ."
   },
   "dependencies": {
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "eslint": "^3.19.0"
