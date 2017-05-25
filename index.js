@@ -39,9 +39,6 @@ module.exports = function(tracer) {
             req.currentReqId = _reqId;
             res.currentReqId = _reqId;
             res.end = wrapRes('end');
-            res.send = wrapRes('send');
-            res.sendFile = wrapRes('sendFile');
-            res.sendStatus = wrapRes('sendStatus');
 
             tracer(Object.assign({}, configReq(req), { requestId: _reqId, type: 'request' }));
             return next();
