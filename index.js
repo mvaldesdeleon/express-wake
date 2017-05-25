@@ -40,21 +40,21 @@ module.exports = function(tracer, options = {}) {
             res.set('x-wake-request-id', res.currentReqId);
             return next();
         },
-        decorator: function(tag, config, fn) {
+        decorator: function(fn, config) {
             return function (...args) {
                 let _reqId = currentReqId;
                 let _opId = uuid();
 
-                tracer(Object.assign(config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'request' }));
+                tracer(Object.assign(config ? config(...args) : {}, { requestId: _reqId, operationId: _opId, interface: 'internal', type: 'request' }));
                 // FUN FACT: Request data is provided to the decorated function as the `this` argument!
                 return fn.call({ requestId: _reqId, operationId: _opId }, ...args)
                     .then(result => {
-                        tracer(Object.assign(config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'success' }));
+                        tracer(Object.assign(config ? config(...args) : {}, { requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'success' }));
                         currentReqId = _reqId;
                         return result;
                     })
                     .catch(err => {
-                        tracer(Object.assign(config(...args), { tag, requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'error' }, options.debug ? { error: toObject(err) } : {}));
+                        tracer(Object.assign(config ? config(...args) : {}, { requestId: _reqId, operationId: _opId, interface: 'internal', type: 'response', result: 'error' }, options.debug ? { error: toObject(err) } : {}));
                         currentReqId = _reqId;
                         return Promise.reject(err);
                     });
