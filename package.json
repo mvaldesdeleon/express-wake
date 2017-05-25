@@ -1,6 +1,6 @@
 {
   "name": "express-wake",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Kinda traces requests somehow.",
   "main": "index.js",
   "scripts": {
