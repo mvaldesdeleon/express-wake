@@ -16,6 +16,8 @@ module.exports = function(tracer, options = {}) {
     return {
         middleware: function(req, res, next) {
             let _reqId = req.get('x-wake-request-id') || uuid();
+            // TODO: I want an array of sequential values to be propagated as well. The array goes a level deeper HERE, on every incoming request
+            // and allows us to track the order of the requests we make, and so on...
             currentReqId = _reqId;
 
             const wrapRes = propFn => {
